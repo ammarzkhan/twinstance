@@ -510,23 +510,68 @@ static class Tests
         Eq(r.Outcome, ProfileDiscoveryOutcome.Ambiguous, "no name match among several is ambiguous");
         Eq(r.Best.Name, "ClickUp", "with nothing better, most recently modified leads");
 
-        // The 9 August 2026 case, recorded because the ranking was right and the screen was
-        // wrong. Neither app's profile folder equals its executable name — Kimi keeps its data
-        // in "kimi-desktop" and OpenCode in "ai.opencode.desktop" — so nothing name-matches and
-        // the fallback promotes whichever was written last. Setting up OpenCode while Kimi was
-        // running, that fallback is Kimi's folder. Ambiguous is the correct answer here; the
-        // result screen printed Best with a green tick anyway and told the user their OpenCode
-        // account lived in kimi-desktop.
+        // The 9 August 2026 case. Kimi keeps its profile in "kimi-desktop" and OpenCode in
+        // "ai.opencode.desktop", so neither could identify its own folder under exact matching
+        // and the fallback named Kimi's folder as OpenCode's account. Token matching fixes both.
+        IList<string> oc = ProfileDiscovery.IdentityNames(@"C:\p\OpenCode.exe", "OpenCode", null, null);
+        IList<string> kimi = ProfileDiscovery.IdentityNames(@"C:\p\Kimi.exe", "Kimi", null, null);
+
+        Check(ProfileDiscovery.NameMatches("ai.opencode.desktop", oc), "a dotted folder matches on a token");
+        Check(ProfileDiscovery.NameMatches("kimi-desktop", kimi), "a hyphenated folder matches on a token");
+        Check(!ProfileDiscovery.NameMatches("kimi-desktop", oc), "and not on somebody else's token");
+
         var neitherMatches = new List<ProfileCandidate> {
             Candidate(@"C:\r\kimi-desktop",        3, true, 0),   // in use, so newest
             Candidate(@"C:\r\ai.opencode.desktop", 3, true, 5)
         };
-        r = ProfileDiscovery.Rank(
-                neitherMatches,
-                ProfileDiscovery.IdentityNames(@"C:\p\OpenCode.exe", "OpenCode", null, null));
-        Eq(r.Outcome, ProfileDiscoveryOutcome.Ambiguous, "a dotted profile folder name matches nothing");
-        Eq(r.Best.Name, "kimi-desktop", "the fallback really does surface another app's folder");
-        Check(!r.Ranked[0].NameMatched, "and it is not flagged as a name match");
+        r = ProfileDiscovery.Rank(neitherMatches, oc);
+        Eq(r.Outcome, ProfileDiscoveryOutcome.Unique, "the right folder is now identifiable");
+        Eq(r.Best.Name, "ai.opencode.desktop", "the token match beats the newer decoy");
+        r = ProfileDiscovery.Rank(neitherMatches, kimi);
+        Eq(r.Best.Name, "kimi-desktop", "and each app finds its own");
+
+        // The reason token matching is safe. A different build of the same product is a
+        // different application with its own profile, and must never match.
+        IList<string> discord = ProfileDiscovery.IdentityNames(@"C:\p\Discord.exe", "Discord", null, null);
+        Check(ProfileDiscovery.NameMatches("Discord", discord), "Discord matches its own folder");
+        Check(!ProfileDiscovery.NameMatches("DiscordCanary", discord), "camel case is one token, so Canary is not Discord");
+        Check(!ProfileDiscovery.NameMatches("DiscordPTB", discord), "nor is PTB");
+        Check(!ProfileDiscovery.NameMatches("Discord-Canary", discord), "and separating it does not help it either");
+        Check(!ProfileDiscovery.NameMatches("Code - Insiders", vsc), "Insiders is not Visual Studio Code");
+        Check(ProfileDiscovery.NameMatches("Code", vsc), "the real one still matches");
+
+        // The real %APPDATA% on the development machine, 9 Aug 2026: every folder there holding
+        // a Local State. Both apps must find their own and nothing else, against the actual
+        // neighbours rather than a convenient pair.
+        var realRoot = new List<ProfileCandidate> {
+            Candidate(@"C:\r\ai.opencode.desktop", 3, true, 5),
+            Candidate(@"C:\r\arduino-ide",         3, true, 6),
+            Candidate(@"C:\r\asus_framework",      3, true, 7),
+            Candidate(@"C:\r\ClickUp",             3, true, 1),
+            Candidate(@"C:\r\Code",                3, true, 2),
+            Candidate(@"C:\r\Docker Desktop",      3, true, 8),
+            Candidate(@"C:\r\eigent",              3, true, 9),
+            Candidate(@"C:\r\kimi-desktop",        3, true, 0),   // in use, so newest
+            Candidate(@"C:\r\Loom",                3, true, 3),
+            Candidate(@"C:\r\Riot Client",         3, true, 10),
+            Candidate(@"C:\r\riot-client-ux",      3, true, 11),
+            Candidate(@"C:\r\Slack",               3, true, 4),
+            Candidate(@"C:\r\UI Launcher",         3, true, 12)
+        };
+        r = ProfileDiscovery.Rank(realRoot, oc);
+        Eq(r.Outcome, ProfileDiscoveryOutcome.Unique, "OpenCode resolves against the real root");
+        Eq(r.Best.Name, "ai.opencode.desktop", "and picks its own folder out of thirteen");
+        r = ProfileDiscovery.Rank(realRoot, kimi);
+        Eq(r.Outcome, ProfileDiscoveryOutcome.Unique, "Kimi resolves against the real root");
+        Eq(r.Best.Name, "kimi-desktop", "even though it is also the most recently written");
+        r = ProfileDiscovery.Rank(realRoot, vsc);
+        Eq(r.Best.Name, "Code", "and VS Code is unaffected by the loosening");
+
+        // Generic tails must never carry a match on their own, or every Electron app on the
+        // machine would answer to "desktop".
+        Check(!ProfileDiscovery.NameMatches("kimi-desktop",
+                  ProfileDiscovery.IdentityNames(@"C:\p\Whatever.exe", "desktop", null, null)),
+              "'desktop' is not an identity");
 
         // One candidate needs no name match to be the answer.
         r = ProfileDiscovery.Rank(new List<ProfileCandidate> { Candidate(@"C:\r\Whatever", 1, false, 3) },

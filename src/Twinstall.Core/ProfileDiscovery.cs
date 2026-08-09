@@ -107,7 +107,31 @@ namespace Twinstall.Core
         ///
         /// Only add to this list when something has actually been seen colliding.
         /// </summary>
-        public static readonly string[] NonIdentifyingNames = { "electron", "chromium" };
+        public static readonly string[] NonIdentifyingNames =
+            { "electron", "chromium", "desktop", "app", "client" };
+
+        /// <summary>
+        /// Separators a vendor puts between its name and whatever it appends to it. Deliberately
+        /// not camel case: "DiscordCanary" has no separator, and that is exactly what keeps it
+        /// from being read as Discord.
+        /// </summary>
+        private static readonly char[] TokenSeparators = { '-', '_', '.', ' ' };
+
+        /// <summary>
+        /// Words that mark a *different build* of the same product rather than the product.
+        /// A folder carrying one of these is never treated as a match, however well the rest of
+        /// it reads.
+        ///
+        /// This is the whole reason token matching is safe. "Code - Insiders" tokenises to
+        /// [Code, Insiders] and would otherwise match Visual Studio Code, whose profile is
+        /// "Code" — two applications, two profiles, and pointing one at the other's data is the
+        /// precise failure this ranking exists to avoid.
+        /// </summary>
+        public static readonly string[] VariantNames =
+        {
+            "canary", "ptb", "insiders", "beta", "alpha", "dev", "nightly",
+            "preview", "rc", "experimental", "next", "staging"
+        };
 
         /// <summary>
         /// Names that would identify this app's own folder. Order does not matter; any exact
@@ -153,12 +177,49 @@ namespace Twinstall.Core
             return dot > 0 ? leaf.Substring(0, dot) : leaf;
         }
 
+        /// <summary>
+        /// Whether a profile folder belongs to this app.
+        ///
+        /// Equality alone was too strict to be useful. Measured 9 Aug 2026: Kimi keeps its
+        /// profile in "kimi-desktop" and OpenCode in "ai.opencode.desktop", so neither app could
+        /// identify its own folder, and the ranking fell back to most-recently-written — which
+        /// named Kimi's folder as OpenCode's account.
+        ///
+        /// So a folder also matches when one of its **separator-delimited tokens** is one of the
+        /// app's names. Two rules keep that from being reckless:
+        ///
+        /// - Tokens split on -, _, . and space, and **not** on camel case. "DiscordCanary" is
+        ///   therefore a single token and does not match Discord, which is correct: it is a
+        ///   different application with its own profile.
+        /// - A folder holding any <see cref="VariantNames"/> token never matches, which is what
+        ///   stops "Code - Insiders" being read as Visual Studio Code.
+        ///
+        /// Both are conservative in the same direction. A missed match costs an "I could not
+        /// tell" and one click; a wrong match points an account at another app's data.
+        /// </summary>
         public static bool NameMatches(string folderName, IEnumerable<string> identityNames)
         {
             if (string.IsNullOrWhiteSpace(folderName) || identityNames == null) return false;
+
+            var names = new List<string>();
             foreach (string n in identityNames)
-                if (!string.IsNullOrWhiteSpace(n) && string.Equals(n.Trim(), folderName, StringComparison.OrdinalIgnoreCase))
-                    return true;
+                if (!string.IsNullOrWhiteSpace(n)) names.Add(n.Trim());
+
+            // Exact is the strongest signal and needs none of the machinery below.
+            foreach (string n in names)
+                if (string.Equals(n, folderName, StringComparison.OrdinalIgnoreCase)) return true;
+
+            string[] tokens = folderName.Split(TokenSeparators, StringSplitOptions.RemoveEmptyEntries);
+            if (tokens.Length < 2) return false;
+
+            foreach (string t in tokens)
+                foreach (string variant in VariantNames)
+                    if (string.Equals(t, variant, StringComparison.OrdinalIgnoreCase)) return false;
+
+            foreach (string n in names)
+                foreach (string t in tokens)
+                    if (string.Equals(t, n, StringComparison.OrdinalIgnoreCase)) return true;
+
             return false;
         }
 
