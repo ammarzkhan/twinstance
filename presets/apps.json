@@ -230,27 +230,24 @@
     {
       "id": "opencode",
       "displayName": "OpenCode",
-      "exeName": "opencode.exe",
+      "exeName": "OpenCode.exe",
       "hints": [
-        "%LOCALAPPDATA%\\Programs\\opencode",
-        "%LOCALAPPDATA%\\Programs\\OpenCode"
+        "%LOCALAPPDATA%\\Programs\\@opencode-aidesktop"
       ],
       "verified": false,
       "provenance": "inferred",
-      "note": "Chromium confirmed, install path is not. The profile at %APPDATA%\u0007i.opencode.desktop on the development machine carries the full Chromium user-data-dir layout - Local State, Preferences, blob_storage, GPUCache, Code Cache, Session Storage - so separate profiles should work. The executable was not present to measure against: only leftover data and an electron-updater payload under %LOCALAPPDATA%\\@opencode-aidesktop-updater. Both the exeName and the hints are therefore guesses, and the app id is ai.opencode.desktop with npm scope @opencode-ai if a better hint is ever needed. Scheme unknown. If the hints miss, 'Choose another app...' still works - detection needs no preset."
+      "note": "Path and scheme observed, behaviour not. This machine still carries OpenCode's protocol registration - opencode:// -> '%LOCALAPPDATA%\\Programs\\@opencode-aidesktop\\OpenCode.exe \"%1\"' - which is where the exeName and the hint come from, note the @ in the folder name. The binary itself has since been uninstalled, so nothing could be run against it. Chromium is not in doubt: the leftover profile at %APPDATA%\\ai.opencode.desktop has the full user-data-dir layout including Local State, Preferences, blob_storage and GPUCache. Stays inferred until someone with it installed confirms the launch test."
     },
     {
       "id": "kimi",
       "displayName": "Kimi",
       "exeName": "Kimi.exe",
       "hints": [
-        "%LOCALAPPDATA%\\Programs\\Kimi",
-        "%LOCALAPPDATA%\\Kimi\\app-*",
-        "%LOCALAPPDATA%\\Kimi"
+        "%LOCALAPPDATA%\\Programs\\Kimi"
       ],
       "verified": false,
-      "provenance": "inferred",
-      "note": "Entirely unverified - the weakest entry in this file, and listed as such. Not installed on any machine we have tested, no profile left behind to inspect, and nothing measured. Both the Electron install path and the Squirrel layout are listed because we do not know which it uses, or whether it is Chromium at all. Treat a match here as a starting point for the launch test rather than as a claim that it works."
+      "provenance": "measured",
+      "note": "Detection data measured 9 Aug 2026 against Kimi 3.1.7 at %LOCALAPPDATA%\\Programs\\Kimi\\Kimi.exe. Electron beyond doubt - app.asar, icudtl.dat, resources.pak, chrome_100_percent.pak, chrome_200_percent.pak, v8_context_snapshot.bin and LICENSES.chromium.html are all present - and the profile at %APPDATA%\\kimi-desktop carries the usual Chromium layout. It claims TWO schemes, kimi:// and kimi-work://, both registered as 'Kimi.exe -- \"%1\"'. Note the -- separator, and note that a vendor shipping a second 'work' scheme may already have its own account split; taking over kimi:// does not touch kimi-work://. The launch test has NOT been run - the app was running at the time and an Electron single-instance lock would have made the result meaningless - so verified stays false and whether it honours --user-data-dir is still the open question."
     }
   ]
 }
