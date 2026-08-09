@@ -2,6 +2,47 @@
 
 Notable changes to Twinstall. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.5.2] — 2026-08-09
+
+### Fixed — the result screen could name another app's profile as yours
+
+Setting up OpenCode, step 2 stated *"Your existing account lives in kimi-desktop"* with a green
+tick. That folder belongs to Kimi. Going along with it would have pointed the default account at
+a different application's data.
+
+The ranking was never wrong — it returns *ambiguous* for exactly this case and always has. The
+screen printed the top-ranked guess regardless, so a fallback was rendered as a confirmed fact.
+It now says it could not tell, when it could not tell.
+
+### Changed — an app can recognise its own profile folder again
+
+Matching a profile folder required the name to be exactly the app's own, and almost no app does
+that: Kimi keeps its data in `kimi-desktop`, OpenCode in `ai.opencode.desktop`. Neither could
+identify its own folder, which is what left the screen guessing above.
+
+A folder now also matches on its separator-delimited parts, with two deliberate limits:
+
+- Parts split on `-`, `_`, `.` and space, and **not** on camel case — so `DiscordCanary` stays one
+  part and is never read as Discord. It is a different application with its own profile.
+- A folder carrying a variant word — canary, ptb, insiders, beta, nightly and the rest — never
+  matches, which is what stops `Code - Insiders` being taken for Visual Studio Code.
+
+Both limits fail the same way on purpose. A missed match costs one click; a wrong match silently
+points an account at another app's data.
+
+### Added — Kimi, and an app the list no longer offers
+
+**Kimi** is supported and measured: version 3.1.7 honours `--user-data-dir` and creates a separate
+profile, so two accounts work. Note it claims both `kimi://` and `kimi-work://`; Twinstall takes
+only the first.
+
+**OpenCode is deliberately absent from the list**, having been measured as impossible to support.
+It takes `--user-data-dir`, discards it, and spawns every child process with its own fixed path —
+and redirecting `%APPDATA%` does not move it either, because Electron resolves that folder
+through Windows rather than the environment. It stays in the preset file with the evidence
+attached, so the question does not have to be investigated twice, and *Choose another app…* still
+accepts it and still explains itself.
+
 ## [0.5.1] — 2026-08-08
 
 ### Fixed — the release page told you to download a file that does not exist
