@@ -10,7 +10,10 @@
       "id": "slack",
       "displayName": "Slack",
       "exeName": "slack.exe",
-      "hints": ["%LOCALAPPDATA%\\slack\\app-*", "%LOCALAPPDATA%\\slack"],
+      "hints": [
+        "%LOCALAPPDATA%\\slack\\app-*",
+        "%LOCALAPPDATA%\\slack"
+      ],
       "verified": false,
       "provenance": "measured",
       "note": "Detection and launch test verified 7 Aug 2026 against Slack 4.51.180. The root %LOCALAPPDATA%\\slack\\slack.exe is a Squirrel stub: zero Chromium markers, and it fails the launch test after the full 30s because it does not forward --user-data-dir. app-4.51.180\\slack.exe scores 5 and passes in 1.4s. Scheme slack://. Routing and badging still untested, so verified stays false."
@@ -19,7 +22,10 @@
       "id": "claude",
       "displayName": "Claude",
       "exeName": "Claude.exe",
-      "hints": ["%ProgramFiles%\\WindowsApps\\Claude_*\\app", "%LOCALAPPDATA%\\AnthropicClaude"],
+      "hints": [
+        "%ProgramFiles%\\WindowsApps\\Claude_*\\app",
+        "%LOCALAPPDATA%\\AnthropicClaude"
+      ],
       "verified": true,
       "provenance": "measured",
       "verifiedNotes": "End-to-end on Windows 11, Store build, Aug 2026: routing, isolation, Cowork VM, badged taskbar icons. Re-verified 7 Aug 2026 against Claude_1.25927.0.0_x64__pzs8sxrjxfjjc - 6 markers, probe passed in 1.5s, scheme claude://, profile root correctly derived as %LOCALAPPDATA%\\Packages\\Claude_pzs8sxrjxfjjc\\LocalCache\\Roaming. Two instances have been run side by side on the development machine all along."
@@ -28,7 +34,10 @@
       "id": "vscode",
       "displayName": "Visual Studio Code",
       "exeName": "Code.exe",
-      "hints": ["%LOCALAPPDATA%\\Programs\\Microsoft VS Code", "%ProgramFiles%\\Microsoft VS Code"],
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\Microsoft VS Code",
+        "%ProgramFiles%\\Microsoft VS Code"
+      ],
       "verified": false,
       "provenance": "measured",
       "note": "Has native profiles too; Twinstall adds taskbar badging and callback routing. Verified 7 Aug 2026. Note the layout: only Code.exe sits at the install root and every Chromium marker lives in a commit-hash folder beside it, so this app is only detected because ChromiumDetector sweeps one level of subdirectories. Unlike Slack's stub, the root executable does forward --user-data-dir - it passed in 3.6s. Scheme vscode://."
@@ -37,7 +46,9 @@
       "id": "loom",
       "displayName": "Loom",
       "exeName": "Loom.exe",
-      "hints": ["%LOCALAPPDATA%\\Programs\\Loom"],
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\Loom"
+      ],
       "verified": false,
       "provenance": "measured",
       "note": "Verified 7 Aug 2026: 6 markers, probe passed in 3.1s, scheme loomDesktop://. Worth recording because a widely circulated compatibility list puts Loom under 'single active account only' - that describes its own account-switching UI, not whether it honours --user-data-dir. It does."
@@ -46,7 +57,10 @@
       "id": "clickup",
       "displayName": "ClickUp",
       "exeName": "ClickUp.exe",
-      "hints": ["%LOCALAPPDATA%\\Programs\\desktop", "%LOCALAPPDATA%\\Programs\\ClickUp"],
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\desktop",
+        "%LOCALAPPDATA%\\Programs\\ClickUp"
+      ],
       "verified": false,
       "provenance": "measured",
       "note": "Verified 7 Aug 2026: 6 markers, probe passed in 1.8s, scheme clickup://. Note the install folder is literally 'Programs\\desktop' with ClickUp.exe inside - the folder name is not the product name, which is exactly why detection reads the executable rather than trusting a path."
@@ -55,7 +69,10 @@
       "id": "discord",
       "displayName": "Discord",
       "exeName": "Discord.exe",
-      "hints": ["%LOCALAPPDATA%\\Discord\\app-*", "%LOCALAPPDATA%\\Discord"],
+      "hints": [
+        "%LOCALAPPDATA%\\Discord\\app-*",
+        "%LOCALAPPDATA%\\Discord"
+      ],
       "verified": false,
       "provenance": "inferred",
       "note": "Not installed on any machine we have tested. Squirrel layout assumed by analogy with Slack, so the versioned hint is listed first."
@@ -64,7 +81,9 @@
       "id": "signal",
       "displayName": "Signal",
       "exeName": "Signal.exe",
-      "hints": ["%LOCALAPPDATA%\\Programs\\signal-desktop"],
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\signal-desktop"
+      ],
       "verified": false,
       "provenance": "inferred",
       "note": "Not installed on any machine we have tested."
@@ -73,7 +92,9 @@
       "id": "cursor",
       "displayName": "Cursor",
       "exeName": "Cursor.exe",
-      "hints": ["%LOCALAPPDATA%\\Programs\\cursor"],
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\cursor"
+      ],
       "verified": false,
       "provenance": "inferred",
       "note": "A VS Code fork, so expect the same commit-hash subfolder layout - detection handles that via the subdirectory sweep."
@@ -82,7 +103,11 @@
       "id": "obsidian",
       "displayName": "Obsidian",
       "exeName": "Obsidian.exe",
-      "hints": ["%LOCALAPPDATA%\\Obsidian\\app-*", "%LOCALAPPDATA%\\Obsidian", "%LOCALAPPDATA%\\Programs\\obsidian"],
+      "hints": [
+        "%LOCALAPPDATA%\\Obsidian\\app-*",
+        "%LOCALAPPDATA%\\Obsidian",
+        "%LOCALAPPDATA%\\Programs\\obsidian"
+      ],
       "verified": false,
       "provenance": "inferred"
     },
@@ -90,7 +115,9 @@
       "id": "notion",
       "displayName": "Notion",
       "exeName": "Notion.exe",
-      "hints": ["%LOCALAPPDATA%\\Programs\\Notion"],
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\Notion"
+      ],
       "verified": false,
       "provenance": "inferred"
     },
@@ -98,7 +125,10 @@
       "id": "figma",
       "displayName": "Figma",
       "exeName": "Figma.exe",
-      "hints": ["%LOCALAPPDATA%\\Figma\\app-*", "%LOCALAPPDATA%\\Figma"],
+      "hints": [
+        "%LOCALAPPDATA%\\Figma\\app-*",
+        "%LOCALAPPDATA%\\Figma"
+      ],
       "verified": false,
       "provenance": "inferred"
     },
@@ -106,7 +136,10 @@
       "id": "githubdesktop",
       "displayName": "GitHub Desktop",
       "exeName": "GitHubDesktop.exe",
-      "hints": ["%LOCALAPPDATA%\\GitHubDesktop\\app-*", "%LOCALAPPDATA%\\GitHubDesktop"],
+      "hints": [
+        "%LOCALAPPDATA%\\GitHubDesktop\\app-*",
+        "%LOCALAPPDATA%\\GitHubDesktop"
+      ],
       "verified": false,
       "provenance": "inferred"
     },
@@ -114,7 +147,10 @@
       "id": "onepassword",
       "displayName": "1Password",
       "exeName": "1Password.exe",
-      "hints": ["%LOCALAPPDATA%\\1Password\\app\\8", "%ProgramFiles%\\1Password"],
+      "hints": [
+        "%LOCALAPPDATA%\\1Password\\app\\8",
+        "%ProgramFiles%\\1Password"
+      ],
       "verified": false,
       "provenance": "inferred",
       "note": "A password manager holding two vaults deserves extra care: confirm the two profile folders really are separate before trusting it with a second account."
@@ -123,7 +159,9 @@
       "id": "bitwarden",
       "displayName": "Bitwarden",
       "exeName": "Bitwarden.exe",
-      "hints": ["%LOCALAPPDATA%\\Programs\\Bitwarden"],
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\Bitwarden"
+      ],
       "verified": false,
       "provenance": "inferred",
       "note": "Same caution as 1Password."
@@ -132,7 +170,9 @@
       "id": "joplin",
       "displayName": "Joplin",
       "exeName": "Joplin.exe",
-      "hints": ["%LOCALAPPDATA%\\Programs\\Joplin"],
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\Joplin"
+      ],
       "verified": false,
       "provenance": "inferred"
     },
@@ -140,7 +180,9 @@
       "id": "element",
       "displayName": "Element",
       "exeName": "Element.exe",
-      "hints": ["%LOCALAPPDATA%\\Programs\\element-desktop"],
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\element-desktop"
+      ],
       "verified": false,
       "provenance": "inferred"
     },
@@ -148,7 +190,10 @@
       "id": "postman",
       "displayName": "Postman",
       "exeName": "Postman.exe",
-      "hints": ["%LOCALAPPDATA%\\Postman\\app-*", "%LOCALAPPDATA%\\Postman"],
+      "hints": [
+        "%LOCALAPPDATA%\\Postman\\app-*",
+        "%LOCALAPPDATA%\\Postman"
+      ],
       "verified": false,
       "provenance": "inferred"
     },
@@ -156,7 +201,9 @@
       "id": "insomnia",
       "displayName": "Insomnia",
       "exeName": "Insomnia.exe",
-      "hints": ["%LOCALAPPDATA%\\Programs\\Insomnia"],
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\Insomnia"
+      ],
       "verified": false,
       "provenance": "inferred"
     },
@@ -164,7 +211,9 @@
       "id": "evernote",
       "displayName": "Evernote",
       "exeName": "Evernote.exe",
-      "hints": ["%LOCALAPPDATA%\\Programs\\Evernote"],
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\Evernote"
+      ],
       "verified": false,
       "provenance": "inferred"
     },
@@ -172,9 +221,36 @@
       "id": "superhuman",
       "displayName": "Superhuman",
       "exeName": "Superhuman.exe",
-      "hints": ["%LOCALAPPDATA%\\Programs\\Superhuman"],
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\Superhuman"
+      ],
       "verified": false,
       "provenance": "inferred"
+    },
+    {
+      "id": "opencode",
+      "displayName": "OpenCode",
+      "exeName": "opencode.exe",
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\opencode",
+        "%LOCALAPPDATA%\\Programs\\OpenCode"
+      ],
+      "verified": false,
+      "provenance": "inferred",
+      "note": "Chromium confirmed, install path is not. The profile at %APPDATA%\u0007i.opencode.desktop on the development machine carries the full Chromium user-data-dir layout - Local State, Preferences, blob_storage, GPUCache, Code Cache, Session Storage - so separate profiles should work. The executable was not present to measure against: only leftover data and an electron-updater payload under %LOCALAPPDATA%\\@opencode-aidesktop-updater. Both the exeName and the hints are therefore guesses, and the app id is ai.opencode.desktop with npm scope @opencode-ai if a better hint is ever needed. Scheme unknown. If the hints miss, 'Choose another app...' still works - detection needs no preset."
+    },
+    {
+      "id": "kimi",
+      "displayName": "Kimi",
+      "exeName": "Kimi.exe",
+      "hints": [
+        "%LOCALAPPDATA%\\Programs\\Kimi",
+        "%LOCALAPPDATA%\\Kimi\\app-*",
+        "%LOCALAPPDATA%\\Kimi"
+      ],
+      "verified": false,
+      "provenance": "inferred",
+      "note": "Entirely unverified - the weakest entry in this file, and listed as such. Not installed on any machine we have tested, no profile left behind to inspect, and nothing measured. Both the Electron install path and the Squirrel layout are listed because we do not know which it uses, or whether it is Chromium at all. Treat a match here as a starting point for the launch test rather than as a claim that it works."
     }
   ]
 }
