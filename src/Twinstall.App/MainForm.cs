@@ -278,8 +278,12 @@ namespace Twinstall.App
         {
             _presets = Presets.Load();
             _installed.Clear();
+            // Installed and worth offering. An app measured as impossible to support is skipped
+            // here rather than removed from the file: the entry carries the evidence, and
+            // offering it would spend the user's time on a launch test whose answer is already
+            // known. Pointing 'Choose another app...' at one still gives the honest refusal.
             foreach (Preset p in _presets)
-                if (Presets.FindInstalled(p) != null) _installed.Add(p);
+                if (p.Supported && Presets.FindInstalled(p) != null) _installed.Add(p);
 
             AppConfig saved = ConfigStore.Load();
             if (!string.IsNullOrWhiteSpace(saved.ExePath))

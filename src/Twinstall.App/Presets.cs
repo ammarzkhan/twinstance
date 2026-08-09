@@ -14,6 +14,19 @@ namespace Twinstall.App
         internal string ExeName { get; set; }
         internal IList<string> Hints { get; } = new List<string>();
         internal bool Verified { get; set; }
+
+        /// <summary>
+        /// False only for an app measured as impossible to support — OpenCode discards
+        /// --user-data-dir and substitutes its own path, so no second profile can be made.
+        ///
+        /// Such an app is kept in the file and hidden from the list rather than deleted. The
+        /// entry is where the evidence lives, and without it the next person to wonder why
+        /// OpenCode is missing has to repeat the whole investigation to find out. Offering it
+        /// would be worse still: the user picks it, waits through a launch test, and is told no.
+        ///
+        /// Absent means true. Only an explicit false hides an app.
+        /// </summary>
+        internal bool Supported { get; set; } = true;
     }
 
     /// <summary>
@@ -71,7 +84,11 @@ namespace Twinstall.App
                             DisplayName = Text(app, "displayName"),
                             ExeName = Text(app, "exeName"),
                             Verified = app.TryGetProperty("verified", out JsonElement v)
-                                       && v.ValueKind == JsonValueKind.True
+                                       && v.ValueKind == JsonValueKind.True,
+
+                            // Absent means supported. Only an explicit false hides an app.
+                            Supported = !(app.TryGetProperty("supported", out JsonElement s)
+                                          && s.ValueKind == JsonValueKind.False)
                         };
                         if (app.TryGetProperty("hints", out JsonElement hints))
                             foreach (JsonElement h in hints.EnumerateArray())

@@ -59,6 +59,7 @@ namespace Twinstall.App
                             string found = Presets.FindInstalled(p);
                             Log.Write("  " + p.DisplayName + "  exeName=" + (p.ExeName ?? "(null)")
                                       + "  hints=" + p.Hints.Count.ToString(CultureInfo.InvariantCulture)
+                                      + (p.Supported ? string.Empty : "  [HIDDEN: measured as unsupportable]")
                                       + "  -> " + (found ?? "NOT FOUND"));
                             foreach (string h in p.Hints)
                                 Log.Write("      hint: " + h + "  =>  "

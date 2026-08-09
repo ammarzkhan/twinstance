@@ -235,6 +235,7 @@
         "%LOCALAPPDATA%\\Programs\\@opencode-aidesktop"
       ],
       "verified": false,
+      "supported": false,
       "provenance": "measured",
       "note": "MEASURED AS NOT SUPPORTABLE, 9 Aug 2026, against OpenCode 1.18.15 at %LOCALAPPDATA%\\Programs\\@opencode-aidesktop\\OpenCode.exe (note the @ in the folder name). Not a probe timeout and not a launcher stub - the app takes --user-data-dir, discards it, and passes its own fixed path to every child. Started with --user-data-dir pointed at a temp folder, the parent carried the flag while every renderer, gpu-process and utility child was spawned with --user-data-dir=%APPDATA%\\ai.opencode.desktop, and Preferences was written there during the probe. The temp folder stayed empty. Relocating %APPDATA% for the process does not help either: Electron resolves appData through the Windows known-folder API, not the environment variable, so a launch with APPDATA redirected still produced the same hardcoded path. There is no command line or environment route to a second profile, so this app cannot be supported by any approach Twinstall takes. Everything else about it checks out - Chromium, and it owns opencode:// - which is exactly why the entry stays: three of the four signals look fine and only running it finds the one that does not."
     },
