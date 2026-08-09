@@ -510,6 +510,24 @@ static class Tests
         Eq(r.Outcome, ProfileDiscoveryOutcome.Ambiguous, "no name match among several is ambiguous");
         Eq(r.Best.Name, "ClickUp", "with nothing better, most recently modified leads");
 
+        // The 9 August 2026 case, recorded because the ranking was right and the screen was
+        // wrong. Neither app's profile folder equals its executable name — Kimi keeps its data
+        // in "kimi-desktop" and OpenCode in "ai.opencode.desktop" — so nothing name-matches and
+        // the fallback promotes whichever was written last. Setting up OpenCode while Kimi was
+        // running, that fallback is Kimi's folder. Ambiguous is the correct answer here; the
+        // result screen printed Best with a green tick anyway and told the user their OpenCode
+        // account lived in kimi-desktop.
+        var neitherMatches = new List<ProfileCandidate> {
+            Candidate(@"C:\r\kimi-desktop",        3, true, 0),   // in use, so newest
+            Candidate(@"C:\r\ai.opencode.desktop", 3, true, 5)
+        };
+        r = ProfileDiscovery.Rank(
+                neitherMatches,
+                ProfileDiscovery.IdentityNames(@"C:\p\OpenCode.exe", "OpenCode", null, null));
+        Eq(r.Outcome, ProfileDiscoveryOutcome.Ambiguous, "a dotted profile folder name matches nothing");
+        Eq(r.Best.Name, "kimi-desktop", "the fallback really does surface another app's folder");
+        Check(!r.Ranked[0].NameMatched, "and it is not flagged as a name match");
+
         // One candidate needs no name match to be the answer.
         r = ProfileDiscovery.Rank(new List<ProfileCandidate> { Candidate(@"C:\r\Whatever", 1, false, 3) },
                                   ProfileDiscovery.IdentityNames(@"C:\p\App.exe", null, null, null));

@@ -235,8 +235,8 @@
         "%LOCALAPPDATA%\\Programs\\@opencode-aidesktop"
       ],
       "verified": false,
-      "provenance": "inferred",
-      "note": "Path and scheme observed, behaviour not. This machine still carries OpenCode's protocol registration - opencode:// -> '%LOCALAPPDATA%\\Programs\\@opencode-aidesktop\\OpenCode.exe \"%1\"' - which is where the exeName and the hint come from, note the @ in the folder name. The binary itself has since been uninstalled, so nothing could be run against it. Chromium is not in doubt: the leftover profile at %APPDATA%\\ai.opencode.desktop has the full user-data-dir layout including Local State, Preferences, blob_storage and GPUCache. Stays inferred until someone with it installed confirms the launch test."
+      "provenance": "measured",
+      "note": "MEASURED AS NOT WORKING, 9 Aug 2026. OpenCode ignores --user-data-dir, so it cannot run separate instances and Twinstall cannot help with it. Everything else checks out - it is Chromium, and it owns opencode:// - which is exactly why this entry is worth keeping: three of the four signals look fine and only actually running it finds the one that does not. Installed at %LOCALAPPDATA%\\Programs\\@opencode-aidesktop\\OpenCode.exe, note the @ in the folder name; profile at %APPDATA%\\ai.opencode.desktop. Left in the list deliberately: an honest 'cannot do this' arrives faster from a preset than from 'Choose another app...'."
     },
     {
       "id": "kimi",
@@ -247,7 +247,7 @@
       ],
       "verified": false,
       "provenance": "measured",
-      "note": "Detection data measured 9 Aug 2026 against Kimi 3.1.7 at %LOCALAPPDATA%\\Programs\\Kimi\\Kimi.exe. Electron beyond doubt - app.asar, icudtl.dat, resources.pak, chrome_100_percent.pak, chrome_200_percent.pak, v8_context_snapshot.bin and LICENSES.chromium.html are all present - and the profile at %APPDATA%\\kimi-desktop carries the usual Chromium layout. It claims TWO schemes, kimi:// and kimi-work://, both registered as 'Kimi.exe -- \"%1\"'. Note the -- separator, and note that a vendor shipping a second 'work' scheme may already have its own account split; taking over kimi:// does not touch kimi-work://. The launch test has NOT been run - the app was running at the time and an Electron single-instance lock would have made the result meaningless - so verified stays false and whether it honours --user-data-dir is still the open question."
+      "note": "Launch test PASSED 9 Aug 2026 against Kimi 3.1.7 at %LOCALAPPDATA%\\Programs\\Kimi\\Kimi.exe. It honours --user-data-dir and created a separate profile where it was told to, so two accounts work. Electron beyond doubt: app.asar, icudtl.dat, resources.pak, both chrome_*_percent.pak, v8_context_snapshot.bin and LICENSES.chromium.html all present; existing profile at %APPDATA%\\kimi-desktop. It claims TWO schemes, kimi:// and kimi-work://, both registered as 'Kimi.exe -- \"%1\"'. Note the -- separator, and note that a vendor shipping a second 'work' scheme may already have an account split of its own; taking over kimi:// leaves kimi-work:// alone. Routing and badging are still untested end to end, so verified stays false - the same bar Slack is held to."
     }
   ]
 }

@@ -536,8 +536,34 @@ namespace Twinstall.App
                 if (r.StubResolved)
                     y = AddFact(y, true, "Found the real program behind the launcher shortcut");
 
-                if (r.Profiles != null && r.Profiles.Best != null)
-                    y = AddFact(y, true, "Your existing account lives in “" + r.Profiles.Best.Name + "”");
+                // Assert the profile only when the ranking actually identified one.
+                // ProfileDiscoveryOutcome exists precisely because unpackaged apps share
+                // %APPDATA%: scanning it on a real machine returns a Chromium profile for every
+                // Electron app installed. With no name match the ranking falls back to
+                // most-recently-written — whichever app you used last — and this row printed
+                // that as a green tick regardless. Setting up OpenCode, it stated that the
+                // existing account lived in "kimi-desktop", which belongs to Kimi; accepting
+                // that would have pointed the default instance at another app's data. The same
+                // row was right for Kimi only because Kimi happened to be the app running.
+                if (r.Profiles != null)
+                {
+                    switch (r.Profiles.Outcome)
+                    {
+                        case ProfileDiscoveryOutcome.Unique:
+                            if (r.Profiles.Best != null)
+                                y = AddFact(y, true, "Your existing account lives in “" + r.Profiles.Best.Name + "”");
+                            break;
+
+                        case ProfileDiscoveryOutcome.Ambiguous:
+                            y = AddFact(y, false, "Could not tell which existing profile is this app's — "
+                                               + "you will choose it on the next step");
+                            break;
+
+                        case ProfileDiscoveryOutcome.NoneFound:
+                            y = AddFact(y, false, "No existing profile yet — run the app once, then check again");
+                            break;
+                    }
+                }
 
                 if (!string.IsNullOrEmpty(r.Scheme))
                     y = AddFact(y, true, "Sign-in links use " + r.Scheme + ":// — Twinstall can route those");
